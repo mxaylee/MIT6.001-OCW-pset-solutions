@@ -64,8 +64,7 @@ def is_word_guessed(secret_word, letters_guessed):
         for letter in letters_guessed:
             if char == letter:
                 guess += char
-            else:
-                continue
+            else: continue
     return guess == secret_word
 
 
@@ -80,8 +79,7 @@ def get_guessed_word(secret_word, letters_guessed):
     for char in secret_word:
         if char in letters_guessed:
             guess += char
-        else:
-            guess += '_ '
+        else: guess += '_ '
     return guess
 
 
@@ -96,8 +94,7 @@ def get_available_letters(letters_guessed):
     for l in loop_alph:
         if l in letters_guessed:
             alph.remove(l)
-        else: 
-            continue
+        else: continue
     
     return ''.join(sorted(alph))
             
@@ -128,7 +125,6 @@ def hangman(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
 
     secret_letters = str(len(secret_word))
     full_alpha = list(string.ascii_letters)
@@ -139,37 +135,56 @@ def hangman(secret_word):
                     'final_score' : 0}
     
     def border():
-        print('***************************')
+        print('--------')
     
     def invalid_input(requirements):
-        if requirements['warnings_left'] >= 1:
-                requirements['warnings_left'] -= 1
-                print('Oops! That is not a valid letter. You have ' + str(requirements['warnings_left']) + ' warnings left: ' + get_guessed_word(secret_word, requirements['letters_guessed']))
-        elif requirements['warnings_left'] == 0:
-                requirements['guesses_left'] -= 1
-                print('Oops! That is not a valid letter. You have ' + str(requirements['guesses_left']) + ' guesses left: ' + get_guessed_word(secret_word, requirements['letters_guessed']))
+        if requirements['warnings_left'] > 1:
+            requirements['warnings_left'] -= 1
+            print('Oops! That is not a valid letter. You have ' + 
+                  str(requirements['warnings_left']) + 
+                  ' warnings left: ' + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        elif requirements['warnings_left'] <= 1:
+            requirements['guesses_left'] -= 1
+            print('Oops! That is not a valid letter. You have ' + 
+                  str(requirements['guesses_left']) + 
+                  ' guesses left: ' + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
         return requirements
         
     def invalid_guess(requirements):
-        if requirements['warnings_left'] >= 1:
-                requirements['warnings_left'] -= 1
-                print("Oops! You've already guessed that letter. You now have " + str(requirements['warnings_left']) + " warnings left : " + get_guessed_word(secret_word, requirements['letters_guessed']))
-        elif requirements['warnings_left'] == 0:
-                requirements['guesses_left'] -= 1
-                print("Oops! You've already guessed that letter. You now have " + str(requirements['guesses_left']) + " guesses left: " + get_guessed_word(secret_word, requirements['letters_guessed']))
-        return requirements    
+        if requirements['warnings_left'] > 1:
+            requirements['warnings_left'] -= 1
+            print("Oops! You've already guessed that letter. You now have " + 
+                  str(requirements['warnings_left']) + 
+                  " warnings left : " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        elif requirements['warnings_left'] <= 1:
+            requirements['guesses_left'] -= 1
+            print("Oops! You've already guessed that letter. You now have " + 
+                  str(requirements['guesses_left']) + 
+                  " guesses left: " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        return requirements       
         
     def wrong_guess(requirements):
         vowels = ['a', 'e', 'i', 'o', 'u']
         if requirements['user_input'] in vowels:
             requirements['guesses_left'] -= 2
             if requirements['guesses_left'] >= 0:
-                print("Oops! That letter is not in my word. You now have " + str(requirements['guesses_left']) + " guesses left : " + get_guessed_word(secret_word, requirements['letters_guessed']))
+                print("Oops! That letter is not in my word. You now have " + 
+                      str(requirements['guesses_left']) + 
+                      " guesses left : " + 
+                      get_guessed_word(secret_word, requirements['letters_guessed']))
             elif requirements['guesses_left'] < 0:
-                print("Oops! That letter is not in my word. You now have no more guesses left : " + get_guessed_word(secret_word, requirements['letters_guessed']))
+                print("Oops! That letter is not in my word. You now have no more guesses left : " + 
+                      get_guessed_word(secret_word, requirements['letters_guessed']))
         else:
             requirements['guesses_left'] -= 1
-            print("Oops! That letter is not in my word. You now have " + str(requirements['guesses_left']) + " guesses left : " + get_guessed_word(secret_word, requirements['letters_guessed']))
+            print("Oops! That letter is not in my word. You now have " + 
+                  str(requirements['guesses_left']) + 
+                  " guesses left : " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
         return requirements
         
     def correct_guess(requirements):
@@ -184,39 +199,30 @@ def hangman(secret_word):
         return requirements                      
                 
     def welcomemessage(secret_letters, requirements):
-        print()
         print('Welcome to the game Hangman!')
         print('I am thinking of a word that is ' + secret_letters + ' letters long')
-        print('You have ' + str(requirements['warnings_left']) + ' warnings_left')
+        print('You have ' + str(requirements['warnings_left']) + ' warnings left')
         border()
     
     def preround(requirements):
-        letters_left = get_available_letters(requirements['letters_guessed'])
         print('You have ' + str(requirements['guesses_left']) + ' guesses left')
-        print('Available letters: ', letters_left)
+        print('Available letters: ' + get_available_letters(requirements['letters_guessed']))
         return requirements
         
     def begin_round(requirements):      
         requirements['user_input'] = input('Please guess a letter: ')
-        # check input is LETTER
+        # check input is LETTER, else NOT letter
         if requirements['user_input'] in full_alpha and len(requirements['user_input']) == 1:
             requirements['user_input'] = requirements['user_input'].lower()
-            # check input UNGUESSED
+            # check input UNGUESSED, else already guessed
             if requirements['user_input'] not in requirements['letters_guessed']:
                 requirements['letters_guessed'].append(requirements['user_input'])
-                # check input CORRECT
+                # check input CORRECT, else incorrect
                 if requirements['user_input'] in secret_word:
                     correct_guess(requirements)
-                    
-                # else: input incorrect
-                else:
-                    wrong_guess(requirements)
-            # else: input already guesed
-            else:
-                invalid_guess(requirements) 
-        # else: input NOT a letter
-        else:
-            invalid_input(requirements)        
+                else: wrong_guess(requirements)
+            else: invalid_guess(requirements) 
+        else: invalid_input(requirements)        
         border()
         # print('TEST. ', requirements)
         return requirements
@@ -241,14 +247,6 @@ def hangman(secret_word):
             print('Your total score for this game is: ', final_score(requirements)['final_score'])
             break
             
-    # pass
-
-
-
-# When you've completed your hangman function, scroll down to the bottom
-# of the file and uncomment the first two lines to test
-# (hint: you might want to pick your own
-# secret_word while you're doing your own testing)
 
 
 # -----------------------------------
@@ -264,9 +262,24 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
+       
+    stripped_word = my_word.replace("_ ", "_")
+    
+    match = 0
+    for i in range(len(stripped_word)):
+        if len(stripped_word) == len(other_word):
+            if stripped_word[i] == '_':
+                if other_word[i] not in stripped_word:
+                    match += 1
+                    continue
+                elif other_word[i] in stripped_word: continue
+            elif stripped_word[i] == other_word[i]:
+                match += 1
+                continue
+            else: continue
+        else: continue
+#    print("matchedpts", match, "lenother", len(other_word), "strippedword", stripped_word)
+    return match == len(other_word) 
 
 
 def show_possible_matches(my_word):
@@ -279,9 +292,16 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
 
+    matches = []
+    for word in wordlist:
+        if match_with_gaps(my_word, word):
+            matches.append(word)
+        else: continue
+    
+    if len(matches) >= 1:
+        return print(' '.join(matches))
+    else: return print('No matches found')
 
 
 def hangman_with_hints(secret_word):
@@ -311,8 +331,130 @@ def hangman_with_hints(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+
+    secret_letters = str(len(secret_word))
+    full_alpha = list(string.ascii_letters)
+    requirements = {'guesses_left': 6, 
+                    'warnings_left': 3, 
+                    'letters_guessed' : [], 
+                    'user_input': '', 
+                    'final_score' : 0}
+    
+    def border():
+        print('--------')
+    
+    def invalid_input(requirements):
+        if requirements['warnings_left'] > 1:
+            requirements['warnings_left'] -= 1
+            print('Oops! That is not a valid letter. You have ' + 
+                  str(requirements['warnings_left']) + 
+                  ' warnings left: ' + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        elif requirements['warnings_left'] <= 1:
+            requirements['guesses_left'] -= 1
+            print('Oops! That is not a valid letter. You have ' + 
+                  str(requirements['guesses_left']) + 
+                  ' guesses left: ' + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        return requirements
+        
+    def invalid_guess(requirements):
+        if requirements['warnings_left'] > 1:
+            requirements['warnings_left'] -= 1
+            print("Oops! You've already guessed that letter. You now have " + 
+                  str(requirements['warnings_left']) + 
+                  " warnings left : " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        elif requirements['warnings_left'] <= 1:
+            requirements['guesses_left'] -= 1
+            print("Oops! You've already guessed that letter. You now have " + 
+                  str(requirements['guesses_left']) + 
+                  " guesses left: " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        return requirements    
+        
+    def wrong_guess(requirements):
+        vowels = ['a', 'e', 'i', 'o', 'u']
+        if requirements['user_input'] in vowels:
+            requirements['guesses_left'] -= 2
+            if requirements['guesses_left'] >= 0:
+                print("Oops! That letter is not in my word. You now have " + 
+                      str(requirements['guesses_left']) + 
+                      " guesses left : " + 
+                      get_guessed_word(secret_word, requirements['letters_guessed']))
+            elif requirements['guesses_left'] < 0:
+                print("Oops! That letter is not in my word. You now have no more guesses left : " + 
+                      get_guessed_word(secret_word, requirements['letters_guessed']))
+        else:
+            requirements['guesses_left'] -= 1
+            print("Oops! That letter is not in my word. You now have " + 
+                  str(requirements['guesses_left']) + 
+                  " guesses left : " + 
+                  get_guessed_word(secret_word, requirements['letters_guessed']))
+        return requirements
+        
+    def correct_guess(requirements):
+        print('Good guess: ' + get_guessed_word(secret_word, requirements['letters_guessed']))
+
+    def final_score(requirements):
+        unique_letters = 0
+        for c in requirements['letters_guessed']:
+            if c in secret_word:
+                unique_letters += 1
+        requirements['final_score'] = requirements['guesses_left'] * unique_letters
+        return requirements                      
+                
+    def welcomemessage(secret_letters, requirements):
+        print('Welcome to the game Hangman!')
+        print('I am thinking of a word that is ' + secret_letters + ' letters long')
+        print('You have ' + str(requirements['warnings_left']) + ' warnings left')
+        border()
+    
+    def preround(requirements):
+        print('You have ' + str(requirements['guesses_left']) + ' guesses left')
+        print('Available letters: ' + get_available_letters(requirements['letters_guessed']))
+        return requirements
+        
+    def begin_round(requirements):      
+        requirements['user_input'] = input('Please guess a letter: ')
+        # check input is LETTER, elif HINT, else NOT letter
+        if requirements['user_input'] in full_alpha and len(requirements['user_input']) == 1:
+            requirements['user_input'] = requirements['user_input'].lower()
+            # check input UNGUESSED, else already guessed
+            if requirements['user_input'] not in requirements['letters_guessed']:
+                requirements['letters_guessed'].append(requirements['user_input'])
+                # check input CORRECT, else incorrect
+                if requirements['user_input'] in secret_word:
+                    correct_guess(requirements)
+                else: wrong_guess(requirements)
+            else: invalid_guess(requirements) 
+        elif requirements['user_input'] == '*':
+            show_possible_matches(get_guessed_word(secret_word, requirements['letters_guessed']))
+        else: invalid_input(requirements)        
+        border()
+        # print('TEST. ', requirements)
+        return requirements
+    
+    
+    '''
+    the actual running of the game
+    '''
+    welcomemessage(secret_letters, requirements)
+    while requirements['guesses_left'] > 0 and not is_word_guessed(secret_word, requirements['letters_guessed']):
+        preround(requirements)
+        begin_round(requirements)
+        #print('TEST. ', requirements)
+     
+        #check guesses left
+        #check is word is guessed
+        if requirements['guesses_left'] < 1 and not is_word_guessed(secret_word, requirements['letters_guessed']):
+            print('L + bozo + gg + ez. The word was ' + secret_word)
+            break
+        elif requirements['guesses_left'] > 0 and is_word_guessed(secret_word, requirements['letters_guessed']):
+            print('Congratulations, you won!')
+            print('Your total score for this game is: ', final_score(requirements)['final_score'])
+            break
+#    pass
 
 
 
@@ -328,14 +470,14 @@ if __name__ == "__main__":
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    secret_word = choose_word(wordlist)
+    # secret_word = choose_word(wordlist)
     # secret_word = 'apple'
-    hangman(secret_word)
+    # hangman(secret_word)
 
 ###############
     
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
+    secret_word = choose_word(wordlist)
+    hangman_with_hints(secret_word)
